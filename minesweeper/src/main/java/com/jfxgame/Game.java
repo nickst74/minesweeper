@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.jfxgame.GridFX.CellState;
 import com.jfxgame.squares.Mine;
 import com.jfxgame.squares.Safe;
 import com.jfxgame.squares.Square;
@@ -13,6 +14,7 @@ import com.jfxgame.squares.Square;
 public class Game {
     private int rows, cols, mines;
     private Square grid[][];
+    private final App app;
 
     /**
      * Initialize game variables, given at the start of a
@@ -21,10 +23,11 @@ public class Game {
      * @param cols Nunber of columns
      * @param mines Number of mines that the game should have
      */
-    public Game(int rows, int cols, int mines) {
+    public Game(int rows, int cols, int mines, App app) {
         this.rows = rows;
         this.cols = cols;
         this.mines = mines;
+        this.app = app;
     }
 
     /**
@@ -54,6 +57,7 @@ public class Game {
      * with Safe Squares.
      */
     public void initGame() {
+        System.out.println("Created game");
         // initialize grid;
         this.grid = new Square[this.rows][this.cols];
         // pick postitions for mines
@@ -94,9 +98,12 @@ public class Game {
      * @return false if it is a mine, else true
      */
     public boolean reveal(int x, int y) {
+        if(this.grid[x][y].isRevealed() || this.grid[x][y].isMarked())
+            return true;
         // check if it is a mine
         if(this.grid[x][y].isMine()) {
-            System.out.println("Boom!");
+            //System.out.println("Boom!");
+            this.gameOver();
             return false;
         }
         // reveal Sqaures using a list
@@ -115,8 +122,35 @@ public class Game {
                     }
                 }
             }
+            this.app.gridFX.updateCell(curr.getX(), curr.getY(), curr.getState());
         }
         return true;
+    }
+
+    /**
+     * Change marked state of a cell if possible
+     * @param x cell row
+     * @param y cell column
+     */
+    public void mark_unmark(int x, int y) {
+        // check if it is revealed before
+        if(!this.grid[x][y].isRevealed()) {
+            this.grid[x][y].mark_unmark();
+            if(this.grid[x][y].isMarked())
+                this.app.gridFX.updateCell(x, y, CellState.MARK);
+            else
+                this.app.gridFX.updateCell(x, y, CellState.BLANK);
+        }
+    }
+
+    private void gameOver() {
+        // just reveal locations of all mines
+        for (int i = 0; i < this.rows; i++) {
+            for (int j = 0; j < this.cols; j++) {
+                if(this.grid[i][j].isMine())
+                    this.app.gridFX.updateCell(i, j, CellState.MINE);
+            }
+        }
     }
 
 
@@ -137,6 +171,9 @@ public class Game {
         return list.subList(0, count);
     }
 
+    /**
+     * Just a testing function to print the grid
+     */
     public void printGrid() {
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {

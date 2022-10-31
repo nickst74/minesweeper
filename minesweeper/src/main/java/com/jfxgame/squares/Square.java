@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jfxgame.Game;
+import com.jfxgame.GridFX.CellState;
 
 import javafx.util.Pair;
 
@@ -47,7 +48,7 @@ public class Square {
      * Get x coordinate
      * @return row of square
      */
-    protected Integer getX() {
+    public Integer getX() {
         return this.pos.getKey();
     }
 
@@ -55,7 +56,7 @@ public class Square {
      * Get y coordinate
      * @return column of square
      */
-    protected Integer getY() {
+    public Integer getY() {
         return this.pos.getValue();
     }
 
@@ -96,12 +97,48 @@ public class Square {
      */
     public boolean reveal() {
         this.revealed = true;
-        if(this.isMine()) // TODO: maybe throw an exception
+        if(this.isMine())
             return false;
+        if(this.isMarked())
+            this.mark_unmark();
         return ((Safe)this).getAdjMines() == 0;
     }
 
     public boolean isRevealed() {
         return this.revealed;
+    }
+
+    public boolean isMarked() {
+        return this.marked;
+    }
+
+    public CellState getState() {
+        if(this.marked)
+            return CellState.MARK;
+        if(this.revealed) {
+            if(this.isMine())
+                return CellState.MINE;
+            switch (((Safe)this).getAdjMines()) {
+                case 0:
+                    return CellState.ZERO;
+                case 1:
+                    return CellState.ONE;
+                case 2:
+                    return CellState.TWO;
+                case 3:
+                    return CellState.THREE;
+                case 4:
+                    return CellState.FOUR;
+                case 5:
+                    return CellState.FIVE;
+                case 6:
+                    return CellState.SIX;
+                case 7:
+                    return CellState.SEVEN;
+                case 8:
+                    return CellState.EIGHT;
+            };
+        }
+        return CellState.BLANK;
     }
 }

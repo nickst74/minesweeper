@@ -2,24 +2,40 @@ package com.jfxgame;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  * JavaFX App
  */
-public class App{// extends Application {
-/*
+public class App extends Application {
+
     private static Scene scene;
+    public Game game;
+    public GridFX gridFX;
+
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("main-menu"), 640, 480);
+        // initialize grid and game
+        this.game = new Game(10, 10, 10, this);
+        game.initGame();
+        this.gridFX = new GridFX(10, 10, this);
+        Group root = new Group();
+        ScrollPane pane = new ScrollPane(this.gridFX.getCanvas());
+        pane.setMaxSize(500, 500);
+        root.getChildren().add(pane);
+        scene = new Scene(root);
+        stage.sizeToScene();
+        //scene = new Scene(loadFXML("main-menu"), 640, 480);
         stage.setScene(scene);
+        stage.sizeToScene();
+        stage.setResizable(false);
         stage.show();
     }
 
@@ -30,21 +46,10 @@ public class App{// extends Application {
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
-    }*/
-    public static Game game;
+    }
 
     public static void main(String[] args) {
-        App.game = new Game(10, 10, 5);
-        App.game.initGame();
-        int x, y;
-        Scanner myInput = new Scanner( System.in );
-        while(true) {
-            App.game.printGrid();
-            x = myInput.nextInt();
-            y = myInput.nextInt();
-            App.game.reveal(x, y);
-        }
-        //launch();
+        launch();
     }
 
 }

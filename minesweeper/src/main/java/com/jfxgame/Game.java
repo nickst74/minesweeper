@@ -12,7 +12,8 @@ import com.jfxgame.squares.Safe;
 import com.jfxgame.squares.Square;
 
 public class Game {
-    private int rows, cols, mines;
+    public int rows, cols, mines;
+    private int marked, revealed;
     private Square grid[][];
     private final App app;
 
@@ -28,6 +29,9 @@ public class Game {
         this.cols = cols;
         this.mines = mines;
         this.app = app;
+        this.marked = 0;
+        this.revealed = 0;
+        this.initGame();
     }
 
     /**
@@ -46,18 +50,13 @@ public class Game {
         return this.cols;
     }
 
-    public Square[][] getGrid() {
-        return this.grid;
-    }
-
-
     /**
      * Creates game grid and initialize all cells, by picking
      * random locations for all mines and filling the rest
      * with Safe Squares.
      */
     public void initGame() {
-        System.out.println("Created game");
+        //System.out.println("Created game");
         // initialize grid;
         this.grid = new Square[this.rows][this.cols];
         // pick postitions for mines
@@ -113,18 +112,45 @@ public class Game {
         while(!list.isEmpty()) {
             // remove square from list and reveal
             Square curr = list.remove(list.size() - 1);
+            // if we reveal indirectly a marked square, reduce mark count
+            if(curr.isMarked()) {
+                this.marked--;
+            }
             set.add(curr);
             if(curr.reveal()) {
-                // if no adjacent mines, add neighbors to list
-                for(Square adj : curr.adjacentSquares()) {
-                    if(set.add(adj)) {
+                // if no adjacent mines, add not revealed neighbors to list
+                for(Square adj : this.adjacentSquares(curr)) {
+                    if(set.add(adj) && !adj.isRevealed()) {
                         list.add(adj);
                     }
                 }
             }
+            // update revealed square
             this.app.gridFX.updateCell(curr.getX(), curr.getY(), curr.getState());
+            // also increase revealed squares
+            this.revealed++;
         }
+        //System.out.println(revealed);
+        // check if game is finished
+        if(this.rows * this.cols == this.mines + this.revealed)
+            this.victory();
         return true;
+    }
+
+    /**
+     * Find all Squares adjacent to current one
+     * @return A list with adjacent squares
+     */
+    private List<Square> adjacentSquares(Square curr) {
+        List<Square> adjs = new ArrayList<>();
+        for(int i = curr.getX() - 1; i <= curr.getX() + 1; i++) {
+            for (int j = curr.getY() - 1; j <= curr.getY() + 1; j++) {
+                if(i >= 0 && i < this.getRows() && j >= 0 && j < this.getCols() && (i != curr.getX() || j != curr.getY())) {
+                    adjs.add(this.grid[i][j]);
+                }
+            }
+        }
+        return adjs;
     }
 
     /**
@@ -135,15 +161,26 @@ public class Game {
     public void mark_unmark(int x, int y) {
         // check if it is revealed before
         if(!this.grid[x][y].isRevealed()) {
-            this.grid[x][y].mark_unmark();
-            if(this.grid[x][y].isMarked())
-                this.app.gridFX.updateCell(x, y, CellState.MARK);
-            else
+            // if cell is marked, unmark it
+            if(this.grid[x][y].isMarked()) {
+                this.grid[x][y].mark_unmark();
                 this.app.gridFX.updateCell(x, y, CellState.BLANK);
+                this.marked--;
+            } else if(this.marked < this.mines) { // if cell is marked, check if we have any mark left
+                this.grid[x][y].mark_unmark();
+                this.app.gridFX.updateCell(x, y, CellState.MARK);
+                this.marked++;
+            }
         }
+        this.app.header.updateMineCnt(this.mines - this.marked);
     }
 
+    /**
+     * Called when the player reveales a mine and loses.
+     */
     private void gameOver() {
+        // make the grid unclickable
+        this.app.gridFX.disable();
         // just reveal locations of all mines
         for (int i = 0; i < this.rows; i++) {
             for (int j = 0; j < this.cols; j++) {
@@ -151,6 +188,19 @@ public class Game {
                     this.app.gridFX.updateCell(i, j, CellState.MINE);
             }
         }
+        this.app.header.gameOverButton();
+        //System.out.println("GAME OVER");
+    }
+
+    /**
+     * Called when the  player reveals all safe cells in the grid
+     * and wins the game.
+     */
+    private void victory() {
+        // make the grid unclickable
+        this.app.gridFX.disable();
+        this.app.header.victoryButton();
+        //System.out.println("VICTORY");
     }
 
 

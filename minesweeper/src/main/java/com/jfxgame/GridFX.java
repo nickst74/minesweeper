@@ -26,13 +26,17 @@ public class GridFX {
     private Canvas canvas;
     private GraphicsContext gc;
 
+    private boolean clickable;
+
     private final int fontSize = 22, squareEdge = 30, textDispo = 8;
 
 
     /**
      * Initialize canvas to visualize the grid with all the squares
+     * and add a listener for mouse clicks.
      */
     public GridFX(int rows, int cols, App app) {
+        this.enable();
         // create and initialize canvas
         this.app = app;
         this.canvas = new Canvas(rows * this.squareEdge, cols * this.squareEdge);
@@ -47,15 +51,32 @@ public class GridFX {
         }
         // add mouse listener
         canvas.setOnMouseClicked(event -> {
+            if(!clickable)
+                return;
             // firstly find corresponding cell
             int x, y;
             x = (int) event.getX() / this.squareEdge;
             y = (int) event.getY() / this.squareEdge;
+            // then infere if it wa left or right click and try to perform move
             if(event.getButton() == MouseButton.PRIMARY)
                 this.app.game.reveal(x, y);
             else if(event.getButton() == MouseButton.SECONDARY)
                 this.app.game.mark_unmark(x, y);
         });
+    }
+
+    /**
+     * Make the grid clickable.
+     */
+    public void enable() {
+        this.clickable = true;
+    }
+
+    /**
+     * Disable the grid from being clickable.
+     */
+    public void disable() {
+        this.clickable = false;
     }
 
     /**

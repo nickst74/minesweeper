@@ -1,8 +1,5 @@
 package com.jfxgame.squares;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.jfxgame.Game;
 import com.jfxgame.GridFX.CellState;
 
@@ -66,22 +63,6 @@ public class Square {
      */
     public Pair<Integer, Integer> getPos() {
         return pos;
-    }
-
-    /**
-     * Find all Squares adjacent to current one
-     * @return A list with adjacent squares
-     */
-    public List<Square> adjacentSquares() {
-        List<Square> adjs = new ArrayList<>();
-        for(int i = this.getX() - 1; i <= this.getX() + 1; i++) {
-            for (int j = this.getY() - 1; j <= this.getY() + 1; j++) {
-                if(i >= 0 && i < this.game.getRows() && j >= 0 && j < this.game.getCols() && (i != this.getX() || j != this.getY())) {
-                    adjs.add(this.game.getGrid()[i][j]);
-                }
-            }
-        }
-        return adjs;
     }
 
     /**

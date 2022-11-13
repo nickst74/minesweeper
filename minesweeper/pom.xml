@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jfxgame</groupId>
     <artifactId>minesweeper</artifactId>
-    <version>1</version>
+    <version>0.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
@@ -32,9 +32,34 @@
                 </configuration>
             </plugin>
             <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.jfxgame.Minesweeper</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.6</version>
+                <version>0.0.8</version>
+                <configuration>
+                    <release>3.8.0</release>
+                    <jlinkImageName>minesweeper</jlinkImageName>
+                    <launcher>launcher</launcher>
+                    <mainClass>com.jfxgame.App</mainClass>
+                </configuration>
                 <executions>
                     <execution>
                         <!-- Default configuration for running -->

@@ -51,9 +51,10 @@ public class Header {
 
         // Create Home button on the left
         this.homeBtn = new Button("Back");
+        this.homeBtn.setFont(new Font(16));
         this.homeBtn.setTextFill(Color.WHITE);
         this.homeBtn.setBackground(new Background(new BackgroundFill(Color.GRAY, CornerRadii.EMPTY, Insets.EMPTY)));
-        this.homeBtn.setPrefSize(60, 50);
+        this.homeBtn.setPrefSize(80, 50);
         this.homeBtn.setOnAction(event -> {
             if(this.app.inGame()) {
                 Alert alert = new Alert(AlertType.CONFIRMATION);
@@ -73,14 +74,14 @@ public class Header {
         this.header.setLeft(homeBtn);
 
         this.resetBtn = new Button();
-        this.resetBtn.setFont(new Font(20.0));
+        this.resetBtn.setFont(new Font(24.0));
         this.resetBtn.setPrefHeight(50);
         this.resetButton();
 
         this.header.setCenter(this.resetBtn);
 
         BorderPane rightPane = new BorderPane();
-        rightPane.setPrefWidth(60);
+        rightPane.setPrefWidth(80);
         this.mLabel = new Label("0");
         this.tLabel = new Label("0");
         this.mLabel.setTextFill(Color.RED);
@@ -96,7 +97,7 @@ public class Header {
     public void resetButton() {
         this.resetBtn.setTextFill(Color.BLACK);
         this.resetBtn.setBackground(new Background(new BackgroundFill(Color.web("#c0c0c0"), CornerRadii.EMPTY, Insets.EMPTY)));
-        this.resetBtn.setText("In Progress");
+        this.resetBtn.setText("Welcome");
         this.resetBtn.setOnAction(null);
     }
 
@@ -124,6 +125,7 @@ public class Header {
         this.counter = 0;
         this.tLabel.setText("0");
         if(start) {
+            this.resetBtn.setText("In Progress");
             this.timeline.play();
         }
     }

@@ -100,7 +100,7 @@ public class GridFX {
                 break;
             
             case MINE:
-                this.updateCellHelper(i, j, "M", Color.RED, Color.BLACK);
+                this.updateCellHelper(i, j, "B", Color.RED, Color.BLACK);
                 break;
 
             case MARK:
